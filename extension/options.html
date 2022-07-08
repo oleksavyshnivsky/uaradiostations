@@ -8,34 +8,13 @@
 
 		<style>
 			body {
-				width: 500px;
+				max-width: 1000px;
 				text-align: center;
 				padding: 0.1rem;
-	/*			background-color: rgb(32,33,36);
-				color: white;*/
 			}
 			h1 {
 				padding: 0;
 				margin: 0; 
-			}
-			#page-refresh-wrapper {
-				display: none;
-			}
-			
-			a {
-				/*color: white;
-				text-decoration: none;
-				display: block;
-				line-height: 1.5rem;
-				width: 100%;*/
-			}
-			/*a:hover {
-				background-color: grey;
-			}*/
-
-
-			.test {
-				
 			}
 		</style>
 	</head>
@@ -55,16 +34,13 @@
 
 		<template id="tpl-station">
 			<div><div class="input-group">
-				<button class="btn btn-outline-primary bi bi-play-circle-fill text-success" data-station-url>
-					<!-- <i class="bi bi-play-circle-fill text-success" aria-hidden="true"></i> -->
-					<!-- <i class="bi bi-stop-circle text-danger" aria-hidden="true"></i> -->
-				</button>
+				<button class="btn btn-outline-primary bi bi-play-circle-fill text-success" data-station-url></button>
 				<span class="input-group-text flex-fill" data-station-title></span>
 			</div></div>
 		</template>
 
 		<script src="common.js" charset="utf-8"></script>
-		<script src="popup.js" charset="utf-8"></script>
+		<script src="options.js" charset="utf-8"></script>
 	</body>
 </html>
 
