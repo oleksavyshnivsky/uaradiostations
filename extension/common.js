@@ -22,7 +22,7 @@ Array.from(document.querySelectorAll('[data-i18n]')).forEach(el => {
 // Оновлення списку станцій з онлайн-джерела
 // ————————————————————————————————————————————————————————————————————————————————
 async function fetchODEStationList() {
-	let response = await fetch('https://ovyshnivsky.pp.ua/uaradiostations/active.json')
+	let response = await fetch('https://raw.githubusercontent.com/oleksavyshnivsky/uaradiostations/main/page/defaultstations.json')
 	if (response.ok) {
 		let STATIONS = await response.json()
 		document.getElementById('userdata').value = JSON.stringify(STATIONS)
