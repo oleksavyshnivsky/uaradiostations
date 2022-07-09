@@ -119,6 +119,11 @@ function showStationList() {
 			station_wrapper.querySelector('[data-station-url]').dataset.stationUrl = station.url
 			station_wrapper.querySelector('[data-station-url]').onclick = doPlayAction
 			stations_wrapper.appendChild(station_wrapper)
+			// -
+			station_wrapper.querySelector('span').onclick = e => {
+				station_wrapper.querySelector('[data-station-url]').click()
+			}
+			// -
 		})
 		document.getElementById('userdata').value = JSON.stringify(result.stations)
 	})
