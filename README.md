@@ -12,11 +12,6 @@
 * <code>extension</code> — директорія розпакованого розширення
 * <code>misc</code> — допоміжні файли на період розробки
 
-### Зміна вмісту сторінки
-
-- styles.css
-- content.js
-
 ### Popup-вікно
 
 - popup.html
@@ -30,6 +25,10 @@
 - common.css
 - common.js
 - options.js
+
+### Фоновий сценарій
+
+- background.js
 
 
 ## Контакт

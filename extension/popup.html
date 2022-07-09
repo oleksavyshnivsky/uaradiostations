@@ -20,12 +20,25 @@
 	</head>
 	<body class="bg-dark text-white mx-auto">
 		<!-- Заголовок -->
-		<h1 data-i18n="title" class="mb-2"></h1>
+		<h1 data-i18n="title" class="mt-2 mb-3"></h1>
 		<!-- Програвач -->
-		<div id="stations-wrapper" class="d-grid gap-2 col-6 mx-auto mb-5">
-			
+		<div id="stations-wrapper" class="mb-4 d-flex flex-wrap gap-2 justify-content-center">
+
 		</div>
-		<div class="d-grid gap-2 col-6 mx-auto">
+		<!-- Редактор -->
+		<div id="update-wrapper" class="mb-4 p-2" style="display: none; background-color: wheat;">
+			<div class="mb-2">
+				<textarea rows="5" id="userdata" class="form-control" required></textarea>
+			</div>
+			<div class="d-grid gap-2 d-sm-flex justify-content-center">
+				<button id="btn-fetch-standard" class="btn btn-secondary" data-i18n="fetch_default_list"></button>
+				<button id="btn-update-stations" class="btn btn-primary" data-i18n="renew"></button>
+				<button class="btn btn-secondary btn-toggle-editor" data-i18n="close"></button>
+			</div>
+		</div>
+		<div class="d-grid gap-2 col-5 d-md-flex mx-auto mb-4">
+			<!-- Виклик редактора -->
+				<button class="btn btn-secondary btn-toggle-editor" data-i18n="renew_station_list"></button>
 			<!-- Джерело -->
 				<a href="https://github.com/oleksavyshnivsky/uaradiostations" target="_blank" class="btn btn-secondary ">Github</a>
 			<!-- Контакт -->
@@ -33,7 +46,7 @@
 		</div>
 
 		<template id="tpl-station">
-			<div><div class="input-group">
+			<div><div class="input-group" style="width: 20rem;">
 				<button class="btn btn-outline-primary bi bi-play-circle-fill text-success" data-station-url></button>
 				<span class="input-group-text flex-fill" data-station-title></span>
 			</div></div>

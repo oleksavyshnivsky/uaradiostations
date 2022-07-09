@@ -7,5 +7,6 @@
 // ————————————————————————————————————————————————————————————————————————————————
 // Оновлювати показ при поверненні на закладку
 window.onfocus = function() {
-	updateStationStatus()
+	showStationList()
+	updateStationPlayStatus()
 }

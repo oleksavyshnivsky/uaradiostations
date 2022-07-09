@@ -29,5 +29,17 @@
 	},
 	"contact": {
 		"message": "Написати автору"
+	},
+	"renew": {
+		"message": "Оновити"
+	},
+	"renew_station_list": {
+		"message": "Оновити список станцій"
+	},
+	"fetch_default_list": {
+		"message": "Завантажити стандартний список"
+	},
+	"close": {
+		"message": "Закрити"
 	}
 }

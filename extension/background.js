@@ -1,5 +1,4 @@
-let audio = new Audio()
-let status = 0
+const AUDIO = new Audio()
 
 // ————————————————————————————————————————————————————————————————————————————————
 // Користувач надсилає URL request.url
@@ -13,32 +12,30 @@ let status = 0
 // ————————————————————————————————————————————————————————————————————————————————
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	if (!request.url) {
-		sendResponse({url: audio.src, status: status})
+		sendResponse({url: AUDIO.src, status: !AUDIO.paused})
 		return
 	}
 
-	if (audio.src !== request.url)
-		status = 1
-	else
-		status = 1 - status
+	if (AUDIO.src === request.url) {
+		if (AUDIO.paused)
+			AUDIO.play()
+		else
+			AUDIO.pause()
+	} else {
+		AUDIO.src = request.url
+		AUDIO.play()
+	}
 
-	audio.src = request.url
-
-	if (status)
-		audio.play()
-	else
-		audio.pause()
-
-	sendResponse({url: audio.src, status: status})
+	sendResponse({url: AUDIO.src, status: !AUDIO.paused})
 })
 
 
 // ————————————————————————————————————————————————————————————————————————————————
-// СТАРТОВІ ДІЙ
+// СТАРТОВІ ДІЇ
 // ————————————————————————————————————————————————————————————————————————————————
 
 // ————————————————————————————————————————————————————————————————————————————————
-// 2 станції доступні на початку
+// Початковий набір станцій, що доступний при першому відкритті після встановлення
 // ————————————————————————————————————————————————————————————————————————————————
 chrome.storage.local.get(['stations'], function(result) {
 	if (!result.stations) {
@@ -54,7 +51,7 @@ chrome.storage.local.get(['stations'], function(result) {
 		]
 
 		chrome.storage.local.set({stations: STATIONS}, function() {
-			console.log('Value is set to ' + STATIONS);
+			// console.log('Value is set to ' + STATIONS);
 		})
 	}
 })
