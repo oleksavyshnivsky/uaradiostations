@@ -1,6 +1,6 @@
 {
-	"name": "UARadio",
-	"description": "Українські радіостанції",
+	"name": "UA Radio Player",
+	"description": "Програвач українських радіостанцій",
 	"version": "0.1.0",
 	"manifest_version": 2,
 	"default_locale": "uk",

@@ -2,5 +2,6 @@
 // popup.html також використовує common.js
 // ————————————————————————————————————————————————————————————————————————————————
 
-
-
+document.getElementById('btn-options').onclick = e => {
+	chrome.runtime.openOptionsPage()
+}

@@ -17,6 +17,10 @@ Array.from(document.querySelectorAll('[data-i18n]')).forEach(el => {
 	el.innerText = chrome.i18n.getMessage(el.dataset.i18n)
 })
 
+Array.from(document.querySelectorAll('[data-i18n-title]')).forEach(el => {
+	el.title = chrome.i18n.getMessage(el.dataset.i18nTitle)
+})
+
 
 // ————————————————————————————————————————————————————————————————————————————————
 // Оновлення списку станцій з онлайн-джерела
@@ -24,22 +28,9 @@ Array.from(document.querySelectorAll('[data-i18n]')).forEach(el => {
 async function fetchODEStationList() {
 	let response = await fetch('https://oleksavyshnivsky.github.io/uaradiostations/defaultstations.json')
 	if (response.ok) {
-		let STATIONS = await response.json()
-		document.getElementById('userdata').value = JSON.stringify(STATIONS)
+		let STATIONS_DOWNLOADED = await response.json()
+		document.getElementById('userdata').value = JSON.stringify(STATIONS_DOWNLOADED)
 	}
-
-	// if (response.ok) {
-	// 	let STATIONS = await response.json()
-	// 	var now = Math.round(new Date().getTime() / 1000)
-	// 	chrome.storage.local.set({stations: STATIONS, lastupdate: now}, function() {
-	// 		// console.log('Value is set to ' + STATIONS);
-	// 	})
-	// 	showStationList()
-	// 	updateStationPlayStatus()
-	// 	update_wrapper.style.display = 'none'
-	// } else {
-	// 	alert("HTTP-Error: " + response.status)
-	// }
 }
 
 // ————————————————————————————————————————————————————————————————————————————————
@@ -54,10 +45,9 @@ function updateStationList() {
 			// console.log('Value is set to ' + STATIONS);
 		})
 		showStationList()
-		updateStationPlayStatus()
 		update_wrapper.style.display = 'none'
 	} catch (error) {
-		alert('Введений текст не є правильним JSON-масивом')
+		alert(chrome.i18n.getMessage('notajson'))
 	}
 }
 
@@ -74,9 +64,17 @@ function updateStationList() {
 // ————————————————————————————————————————————————————————————————————————————————
 // ДОПОМІЖНІ ФУНКЦІЇ
 // ————————————————————————————————————————————————————————————————————————————————
+const nowplaying_wrapper = document.getElementById('nowplaying-wrapper')
+const nowplaying_button = document.getElementById('nowplaying-button')
+const nowplaying_title = document.getElementById('nowplaying-title')
+const nowplaying_website = document.getElementById('nowplaying-website')
 const stations_wrapper = document.getElementById('stations-wrapper')
 const update_wrapper = document.getElementById('update-wrapper')
 const tpl = document.getElementById('tpl-station').content.querySelector('div')
+let STATIONS = []
+
+nowplaying_button.onclick = doPlayAction
+nowplaying_title.onclick = doPlayAction
 
 // ————————————————————————————————————————————————————————————————————————————————
 // Стилі кнопки програвання
@@ -86,9 +84,9 @@ const tpl = document.getElementById('tpl-station').content.querySelector('div')
 function updateClasses(el, status) {
 	if (status) {
 		el.classList.remove('bi-play-circle-fill', 'text-success')
-		el.classList.add('bi-stop-circle', 'text-danger')
+		el.classList.add('bi-stop-circle-fill', 'text-danger')
 	} else {
-		el.classList.remove('bi-stop-circle', 'text-danger')
+		el.classList.remove('bi-stop-circle-fill', 'text-danger')
 		el.classList.add('bi-play-circle-fill', 'text-success')
 	}
 }
@@ -97,13 +95,25 @@ function updateClasses(el, status) {
 // Вмикання/вимикання програвання
 // ————————————————————————————————————————————————————————————————————————————————
 function doPlayAction(e) {
-	var el = document.querySelector('.bi-stop-circle')
-	if (el) updateClasses(el, 0)
+	var wrapper = e.target.closest('[data-station-i]')
+	var station_i = wrapper.dataset.stationI
+	var station = STATIONS[station_i]
+
+	nowplaying_wrapper.dataset.stationI = station_i
+	nowplaying_button.dataset.stationUrl = station.url
+	nowplaying_title.title = nowplaying_title.innerText = station.title
+	nowplaying_website.href = station.website
+
+	document.querySelectorAll('.bi-stop-circle-fill').forEach(el => updateClasses(el, 0))
 
 	chrome.extension.sendRequest({
-		url: e.target.dataset.stationUrl,
+		url: station.url,
 	}, function(response) {
-		updateClasses(e.target, response.status) 
+		if (response.status) {
+			document.querySelectorAll('[data-station-i="'+station_i+'"] button').forEach(
+				el => updateClasses(el, 1)
+			)
+		}
 	})
 }
 
@@ -113,36 +123,41 @@ function doPlayAction(e) {
 function showStationList() {
 	stations_wrapper.innerHTML = ''
 	chrome.storage.local.get(['stations'], function(result) {
-		result.stations.forEach(station => {
+		STATIONS = result.stations
+		STATIONS.forEach((station, station_i) => {
 			var station_wrapper = document.importNode(tpl, true)
+			station_wrapper.querySelector('[data-station-i]').dataset.stationI = station_i
 			station_wrapper.querySelector('[data-station-title]').innerText = station.title
+			station_wrapper.querySelector('[data-station-title]').title = station.title
+			station_wrapper.querySelector('[data-station-title]').onclick = doPlayAction
 			station_wrapper.querySelector('[data-station-url]').dataset.stationUrl = station.url
 			station_wrapper.querySelector('[data-station-url]').onclick = doPlayAction
+			station_wrapper.querySelector('[data-station-website]').href = station.website
 			stations_wrapper.appendChild(station_wrapper)
-			// -
-			station_wrapper.querySelector('span').onclick = e => {
-				station_wrapper.querySelector('[data-station-url]').click()
-			}
-			// -
 		})
-		document.getElementById('userdata').value = JSON.stringify(result.stations)
-	})
-}
+		document.getElementById('userdata').value = JSON.stringify(STATIONS)
+		// Оновлення статусу програвання
+		chrome.extension.sendRequest({
+			url: '',
+		}, function(response) {
+			if (response.status) {
+				STATIONS.every((station, station_i) => {
+					if (station.url === response.url) {
+						nowplaying_wrapper.dataset.stationI = station_i
+						nowplaying_button.dataset.stationUrl = station.url
+						nowplaying_title.title = nowplaying_title.innerText = station.title
+						nowplaying_website.href = station.website
+						
+						document.querySelectorAll('[data-station-i="'+station_i+'"] button').forEach(
+							el => updateClasses(el, 1)
+						)
 
-// ————————————————————————————————————————————————————————————————————————————————
-// Оновлення статусу програвання
-// ————————————————————————————————————————————————————————————————————————————————
-function updateStationPlayStatus() {
-	var el = document.querySelector('.bi-stop-circle')
-	if (el) updateClasses(el, 0)
-
-	chrome.extension.sendRequest({
-		url: '',
-	}, function(response) {
-		if (response.status) {
-			var el = document.querySelector('button[data-station-url="'+response.url+'"]')
-			if (el) updateClasses(el, 1)
-		}
+						return false
+					} else return true
+					return 
+				})
+			}
+		})
 	})
 }
 
@@ -152,6 +167,7 @@ function updateStationPlayStatus() {
 // ————————————————————————————————————————————————————————————————————————————————
 function toggleEditor() {
 	update_wrapper.style.display = update_wrapper.style.display === '' ? 'none' : ''
+	if (update_wrapper.style.display === '') update_wrapper.scrollIntoView()
 }
 document.querySelectorAll('.btn-toggle-editor').forEach(el => {
 	el.onclick = toggleEditor
@@ -165,4 +181,3 @@ document.getElementById('btn-fetch-standard').onclick = fetchODEStationList
 // СТАРТОВІ ДІЇ
 // ————————————————————————————————————————————————————————————————————————————————
 showStationList()
-updateStationPlayStatus()

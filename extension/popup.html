@@ -9,18 +9,38 @@
 		<style>
 			body {
 				width: 500px;
-				text-align: center;
-				padding: 0.1rem;
-			}
-			h1 {
-				padding: 0;
-				margin: 0; 
 			}
 		</style>
 	</head>
 	<body class="bg-dark text-white mx-auto">
 		<!-- Заголовок -->
-		<h1 data-i18n="title" class="mt-2 mb-3"></h1>
+		<div class="d-flex flex-wrap justify-content-between mx-2 mb-3">
+			<div class="bg-primary p-2"><div id="nowplaying-wrapper" class="input-group" data-station-i>
+				<button class="btn btn-warning bi bi-play-circle-fill " id="nowplaying-button" data-station-url></button>
+				<span class="input-group-text" id="nowplaying-title" style="width: 12rem;" data-station-title></span>
+				<a href="" id="nowplaying-website" target="_blank" class="btn btn-info">
+					<i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+				</a>
+			</div></div>
+			<div class="ms-2 mt-2">
+				<!-- Виклик редактора -->
+				<button target="_blank" data-i18n-title="renew_station_list" class="btn btn-outline-secondary btn-toggle-editor">
+					<i class="bi bi-pencil-square" aria-hidden="true"></i>
+				</button>
+				<!-- Джерело -->
+				<a href="https://github.com/oleksavyshnivsky/uaradiostations" target="_blank" title="Github" class="btn btn-outline-secondary">
+					<i class="bi bi-github" aria-hidden="true"></i>
+				</a>
+				<!-- Контакт -->
+				<a href="mailto:oleksa.vyshnivsky@gmail.com" target="_blank" data-i18n-title="contact" title="Написати автору" class="btn btn-outline-secondary">
+					<i class="bi bi-envelope" aria-hidden="true"></i>
+				</a>
+				<!-- Налаштування -->
+				<button id="btn-options" data-i18n-title="open_options" class="btn btn-outline-secondary">
+					<i class="bi bi-gear" aria-hidden="true"></i>
+				</button>
+			</div>
+		</div>
 		<!-- Програвач -->
 		<div id="stations-wrapper" class="mb-4 d-flex flex-wrap gap-2 justify-content-center">
 
@@ -36,19 +56,15 @@
 				<button class="btn btn-secondary btn-toggle-editor" data-i18n="close"></button>
 			</div>
 		</div>
-		<div class="d-grid gap-2 col-5 d-md-flex mx-auto mb-4">
-			<!-- Виклик редактора -->
-				<button class="btn btn-secondary btn-toggle-editor" data-i18n="renew_station_list"></button>
-			<!-- Джерело -->
-				<a href="https://github.com/oleksavyshnivsky/uaradiostations" target="_blank" class="btn btn-secondary ">Github</a>
-			<!-- Контакт -->
-				<a href="mailto:oleksa.vyshnivsky@gmail.com" target="_blank" data-i18n="contact" class="btn btn-secondary ">Написати автору</a>
-		</div>
 
+		<!-- Програвання -->
 		<template id="tpl-station">
-			<div><div class="input-group" style="width: 23rem;">
+			<div><div class="input-group" data-station-i>
 				<button class="btn btn-outline-primary bi bi-play-circle-fill text-success" data-station-url></button>
-				<span class="input-group-text flex-fill" data-station-title></span>
+				<span class="input-group-text" style="width: 20rem;" data-station-title ></span>
+				<a href="" target="_blank" class="btn btn-outline-secondary"data-station-website>
+					<i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+				</a>
 			</div></div>
 		</template>
 
@@ -56,6 +72,3 @@
 		<script src="popup.js" charset="utf-8"></script>
 	</body>
 </html>
-
-<!-- https://online.hitfm.ua/HitFM -->
-<!-- https://cast.radiogroup.com.ua/retro -->
