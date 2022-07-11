@@ -17,7 +17,7 @@
 
 Браузерне розширення для програвання українських радіостанцій.
 
-![image-20220711221941702](docs\popup.png)
+![popup](https://oleksavyshnivsky.github.io/uaradiostations/popup.png)
 
 ## Встановлення
 
