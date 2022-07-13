@@ -53,12 +53,12 @@ chrome.storage.local.get(['stations'], function(result) {
 		// 	{
 		// 		title: 'Хіт FM',
 		// 		url: 'https://online.hitfm.ua/HitFM',
-		// 		webite: 'https://hitfm.ua/',
+		// 		website: 'https://hitfm.ua/',
 		// 	},
 		// 	{
 		// 		title: 'Ретро FM',
 		// 		url: 'https://cast.radiogroup.com.ua/retro',
-		// 		webite: 'https://example.com/',
+		// 		website: 'https://example.com/',
 		// 	},
 		// ]
 

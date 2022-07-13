@@ -2,15 +2,15 @@
 // Спільні дії для popup.js і options.js
 // ————————————————————————————————————————————————————————————————————————————————
 
-// Ідентифікатор планового закриття сповіщення
-var timeout_id
+// // Ідентифікатор планового закриття сповіщення
+// var timeout_id
 
-// Закриття сповіщення
-function hideMsgbox() {
-	Array.from(document.getElementsByClassName('show')).forEach(
-		el => el.classList.remove('show', 'success', 'error')
-	)
-}
+// // Закриття сповіщення
+// function hideMsgbox() {
+// 	Array.from(document.getElementsByClassName('show')).forEach(
+// 		el => el.classList.remove('show', 'success', 'error')
+// 	)
+// }
 
 // Мова інтерфейсу — виставлення текстівок при завантаженні popup/options
 Array.from(document.querySelectorAll('[data-i18n]')).forEach(el => {
@@ -23,42 +23,66 @@ Array.from(document.querySelectorAll('[data-i18n-title]')).forEach(el => {
 
 
 // ————————————————————————————————————————————————————————————————————————————————
+// Збереження списку станцій у локальному сховищі
+// ————————————————————————————————————————————————————————————————————————————————
+function saveStationListInLS() {
+	chrome.storage.local.set({stations: STATIONS}, function() {})
+}
+
+
+// ————————————————————————————————————————————————————————————————————————————————
+// Оновлення списку станцій з онлайн-джерела
+// ————————————————————————————————————————————————————————————————————————————————
+// async function fetchODEStationList() {
+// 	let response = await fetch('https://oleksavyshnivsky.github.io/uaradiostations/defaultstations.json')
+// 	if (response.ok) {
+// 		let STATIONS_DOWNLOADED = await response.json()
+// 		document.getElementById('userdata').value = JSON.stringify(STATIONS_DOWNLOADED)
+// 	}
+// }
+
+
+// ————————————————————————————————————————————————————————————————————————————————
 // Оновлення списку станцій з онлайн-джерела
 // ————————————————————————————————————————————————————————————————————————————————
 async function fetchODEStationList() {
 	let response = await fetch('https://oleksavyshnivsky.github.io/uaradiostations/defaultstations.json')
 	if (response.ok) {
 		let STATIONS_DOWNLOADED = await response.json()
-		document.getElementById('userdata').value = JSON.stringify(STATIONS_DOWNLOADED)
+		STATIONS_DOWNLOADED.forEach(station => {
+			// Для кожної скачаної станції — перевірити, чи така уже є локально
+			// Перевірка на наявність — за URL трансляції
+			var exists = false
+			STATIONS.every(mystation => {
+				if (mystation.url === station.url) {
+					exists = true
+					return false
+				}
+				return true
+			})
+			// 
+			if (!exists) STATIONS.push(station)
+		})
+		// Збереження у локальному сховищі
+		// saveStationListInLS()
+		document.getElementById('userdata').value = JSON.stringify(STATIONS)
 	}
 }
+
 
 // ————————————————————————————————————————————————————————————————————————————————
 // Оновлення списку станцій з текстового поля
 // ————————————————————————————————————————————————————————————————————————————————
 function updateStationList() {
-	var now = Math.round(new Date().getTime() / 1000)
-
 	try {
 		let STATIONS = JSON.parse(document.getElementById('userdata').value)
-		chrome.storage.local.set({stations: STATIONS, lastupdate: now}, function() {
-			// console.log('Value is set to ' + STATIONS);
-		})
+		saveStationListInLS()
 		showStationList()
 		update_wrapper.style.display = 'none'
 	} catch (error) {
 		alert(chrome.i18n.getMessage('notajson'))
 	}
 }
-
-
-// chrome.storage.local.get(['lastupdate'], async function(result) {
-// 	var now = Math.round(new Date().getTime() / 1000)
-
-// 	if (!result.lastupdate || now - result.lastupdate >= 3600) {
-// 	// if (!result.lastupdate || now - result.lastupdate >= 1) {
-// 	}
-// })
 
 
 // ————————————————————————————————————————————————————————————————————————————————
@@ -110,7 +134,7 @@ function doPlayAction(e) {
 		url: station.url,
 	}, function(response) {
 		if (response.status) {
-			document.querySelectorAll('[data-station-i="'+station_i+'"] button').forEach(
+			document.querySelectorAll('[data-station-i="'+station_i+'"] [data-station-url]').forEach(
 				el => updateClasses(el, 1)
 			)
 		}
@@ -119,11 +143,20 @@ function doPlayAction(e) {
 
 // ————————————————————————————————————————————————————————————————————————————————
 // Показ списку станцій
+// callerpage — popup/options
 // ————————————————————————————————————————————————————————————————————————————————
-function showStationList() {
+function showStationList(callerpage) {
 	stations_wrapper.innerHTML = ''
 	chrome.storage.local.get(['stations'], function(result) {
 		STATIONS = result.stations
+		if (callerpage === 'popup') STATIONS.sort((a, b) => {
+			if (a.star === b.star) {
+				return 0
+			} else {
+				return (a.star < b.star) ? 1 : -1;
+			}
+		})
+
 		STATIONS.forEach((station, station_i) => {
 			var station_wrapper = document.importNode(tpl, true)
 			station_wrapper.querySelector('[data-station-i]').dataset.stationI = station_i
@@ -133,32 +166,58 @@ function showStationList() {
 			station_wrapper.querySelector('[data-station-url]').dataset.stationUrl = station.url
 			station_wrapper.querySelector('[data-station-url]').onclick = doPlayAction
 			station_wrapper.querySelector('[data-station-website]').href = station.website
+			if (callerpage === 'options') {
+				var btn_star = station_wrapper.querySelector('[data-station-star]')
+				if (station.star)
+					btn_star.querySelector('i').classList.add('bi-star-fill')
+				else
+					btn_star.querySelector('i').classList.add('bi-star')
+				btn_star.onclick = setStar
+			} else if (callerpage === 'popup') {
+				var span_star = station_wrapper.querySelector('[data-station-star]')
+				span_star.style.display = station.star ? '' : 'none'
+			}
 			stations_wrapper.appendChild(station_wrapper)
 		})
-		document.getElementById('userdata').value = JSON.stringify(STATIONS)
 		// Оновлення статусу програвання
 		chrome.extension.sendRequest({
 			url: '',
 		}, function(response) {
-			if (response.status) {
-				STATIONS.every((station, station_i) => {
-					if (station.url === response.url) {
-						nowplaying_wrapper.dataset.stationI = station_i
-						nowplaying_button.dataset.stationUrl = station.url
-						nowplaying_title.title = nowplaying_title.innerText = station.title
-						nowplaying_website.href = station.website
-						
-						document.querySelectorAll('[data-station-i="'+station_i+'"] button').forEach(
-							el => updateClasses(el, 1)
-						)
+			STATIONS.every((station, station_i) => {
+				if (station.url === response.url) {
+					nowplaying_wrapper.dataset.stationI = station_i
+					nowplaying_button.dataset.stationUrl = station.url
+					nowplaying_title.title = nowplaying_title.innerText = station.title
+					nowplaying_website.href = station.website
+					
+					document.querySelectorAll('[data-station-i="'+station_i+'"] [data-station-url]').forEach(
+						el => updateClasses(el, response.status)
+					)
 
-						return false
-					} else return true
-					return 
-				})
-			}
+					return false
+				} else return true
+				return 
+			})
 		})
 	})
+}
+
+
+// ————————————————————————————————————————————————————————————————————————————————
+// Зміна статусу "Вибране"
+// ————————————————————————————————————————————————————————————————————————————————
+function setStar(e) {
+	var station_i = e.target.closest('[data-station-i]').dataset.stationI
+	STATIONS[station_i].star = !STATIONS[station_i].star
+	var el_i = document.querySelector('[data-station-i="'+station_i+'"] [data-station-star] i')
+	if (STATIONS[station_i].star) {
+		el_i.classList.add('bi-star-fill')
+		el_i.classList.remove('bi-star')
+	} else {
+		el_i.classList.add('bi-star')
+		el_i.classList.remove('bi-star-fill')
+	}
+	saveStationListInLS()
 }
 
 
@@ -167,7 +226,10 @@ function showStationList() {
 // ————————————————————————————————————————————————————————————————————————————————
 function toggleEditor() {
 	update_wrapper.style.display = update_wrapper.style.display === '' ? 'none' : ''
-	if (update_wrapper.style.display === '') update_wrapper.scrollIntoView()
+	if (update_wrapper.style.display === '') {
+		document.getElementById('userdata').value = JSON.stringify(STATIONS)
+		update_wrapper.scrollIntoView()
+	}
 }
 document.querySelectorAll('.btn-toggle-editor').forEach(el => {
 	el.onclick = toggleEditor
@@ -180,4 +242,4 @@ document.getElementById('btn-fetch-standard').onclick = fetchODEStationList
 // ————————————————————————————————————————————————————————————————————————————————
 // СТАРТОВІ ДІЇ
 // ————————————————————————————————————————————————————————————————————————————————
-showStationList()
+// Див. popup.js / options.js

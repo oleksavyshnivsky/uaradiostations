@@ -17,7 +17,7 @@
 		<h1 data-i18n="title" class="mt-2 mb-3"></h1>
 		<!-- Програвач -->
 		<div class="d-flex justify-content-center mb-4">
-			<div class="bg-primary p-2"><div id="nowplaying-wrapper" class="input-group" data-station-i>
+			<div class=" p-2"><div id="nowplaying-wrapper" class="input-group" data-station-i>
 				<button class="btn btn-warning bi bi-play-circle-fill " id="nowplaying-button" data-station-url></button>
 				<span class="input-group-text" id="nowplaying-title" style="width: 15rem;" data-station-title></span>
 				<a href="" id="nowplaying-website" target="_blank" class="btn btn-info">
@@ -46,6 +46,9 @@
 				<a href="" target="_blank" class="btn btn-outline-secondary"data-station-website>
 					<i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
 				</a>
+				<button class="btn btn-outline-primary" data-station-star>
+					<i class="bi" aria-hidden="true"></i>
+				</button>
 			</div></div>
 		</template>
  
@@ -58,6 +61,11 @@
 			<!-- Контакт -->
 				<a href="mailto:oleksa.vyshnivsky@gmail.com" target="_blank" data-i18n="contact" class="btn btn-outline-secondary ">Написати автору</a>
 		</div>
+
+		<!-- Редактор станції -->
+		<template id="tpl-station-editor">
+			
+		</template>
 
 		<script src="common.js" charset="utf-8"></script>
 		<script src="options.js" charset="utf-8"></script>

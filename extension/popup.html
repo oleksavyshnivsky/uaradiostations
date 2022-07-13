@@ -15,8 +15,8 @@
 	<body class="bg-dark text-white mx-auto">
 		<!-- Заголовок -->
 		<div class="d-flex flex-wrap justify-content-between mx-2 mb-3">
-			<div class="bg-primary p-2"><div id="nowplaying-wrapper" class="input-group" data-station-i>
-				<button class="btn btn-warning bi bi-play-circle-fill " id="nowplaying-button" data-station-url></button>
+			<div class="-bg-primary py-2"><div id="nowplaying-wrapper" class="input-group" data-station-i>
+				<button class="btn btn-warning bi " id="nowplaying-button" data-station-url></button>
 				<span class="input-group-text" id="nowplaying-title" style="width: 12rem;" data-station-title></span>
 				<a href="" id="nowplaying-website" target="_blank" class="btn btn-info">
 					<i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
@@ -65,6 +65,9 @@
 				<a href="" target="_blank" class="btn btn-outline-secondary"data-station-website>
 					<i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
 				</a>
+				<span class="btn btn-outline-secondary disabled" data-station-star style="cursor: default;">
+					<i class="bi bi-star-fill" aria-hidden="true"></i>
+				</span>
 			</div></div>
 		</template>
 
