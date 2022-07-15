@@ -2,6 +2,7 @@
 // options.html також використовує common.js
 // ————————————————————————————————————————————————————————————————————————————————
 const form_editor = document.getElementById('form-editor')
+let FILTERS = []
 
 // ————————————————————————————————————————————————————————————————————————————————
 // Збереження списку станцій у локальному сховищі
@@ -48,11 +49,30 @@ async function fetchStandardStationList() {
 }
 
 // ————————————————————————————————————————————————————————————————————————————————
+// Оновлення списку фільтрів
+// ————————————————————————————————————————————————————————————————————————————————
+function fetchFilters() {
+	var now = new Date()
+	chrome.storage.local.get(['filters', 'fdatetime'], async function(result) {
+		var fdatetime = new Date(Number(fdatetime))
+		FILTERS = result.filters
+		if (now - fdatetime >= 86400000) {
+			let response = await fetch('https://oleksavyshnivsky.github.io/uaradiostations/defaultfilters.json')
+			if (response.ok) {
+				let FILTERS_DOWNLOADED = await response.json()
+				FILTERS = new Set([...result.filters, ...FILTERS_DOWNLOADED])
+				chrome.storage.local.set({filters: FILTERS, fdatetime: now.getTime()}, function() {})
+			}
+		}
+	})
+}
+
+// ————————————————————————————————————————————————————————————————————————————————
 // Зміна статусу "Вибране"
 // ————————————————————————————————————————————————————————————————————————————————
 function setFavourite(e) {
-	var wrapper = e.target.closest('[data-station-i]')
-	var url = wrapper.querySelector('[data-station-url]').dataset.stationUrl
+	var wrapper = e.target.closest('[data-station-id]')
+	var url = wrapper.dataset.stationId
 	STATIONS.every(station => {
 		if (station.url === url) {
 			station.fav = !station.fav
@@ -79,9 +99,9 @@ function showStationList() {
 
 		stations_wrapper.innerHTML = ''
 
-		STATIONS.forEach((station, station_i) => {
+		STATIONS.forEach(station => {
 			var station_wrapper = document.importNode(tpl, true)
-			station_wrapper.querySelector('[data-station-i]').dataset.stationI = station_i
+			station_wrapper.querySelector('[data-station-id]').dataset.stationId = station.url
 			station_wrapper.querySelector('[data-station-title]').innerText = station.title
 			station_wrapper.querySelector('[data-station-title]').title = station.title
 			station_wrapper.querySelector('[data-station-title]').onclick = doPlayAction
@@ -113,34 +133,37 @@ function showStationList() {
 // ————————————————————————————————————————————————————————————————————————————————
 function deleteStation(e) {
 	if (confirm(chrome.i18n.getMessage('confirm_delete'))) {
-		var wrapper = e.target.closest('[data-station-i]')
-		var i = wrapper.dataset.stationI
-		var station = STATIONS.splice(i, 1)[0]
-		saveStationListInLS()
-		showStationList()
+		var url = e.target.closest('[data-station-id]').dataset.stationId
+		for (var i = 0; i < STATIONS.length; i++) {
+			if (url === STATIONS[i].url) {
+				var station = STATIONS.splice(i, 1)[0]
+				saveStationListInLS()
+				showStationList()
 
-		// Прибрати з редактора
-		if (station.url === document.getElementById('editor-oldurl').value) {
-			form_editor.reset()
-			form_editor.classList.remove('show')
-		}
-
-		// Прибрати з програвача
-		chrome.extension.sendRequest({
-			url: '',
-		}, function(response) {
-			if (station.url === response.url) {
-				if (response.status) {
-					chrome.extension.sendRequest({
-						url: station.url,
-					})
+				// Прибрати з редактора
+				if (station.url === document.getElementById('editor-oldurl').value) {
+					form_editor.reset()
+					form_editor.classList.remove('show')
 				}
-				nowplaying_wrapper.dataset.stationI = ''
-				nowplaying_button.dataset.stationUrl = ''
-				nowplaying_title.title = nowplaying_title.innerText = ''
-				nowplaying_website.href = ''
-			}
-		})
+
+				// Прибрати з програвача
+				chrome.extension.sendRequest({
+					url: '',
+				}, function(response) {
+					if (station.url === response.url) {
+						if (response.status) {
+							chrome.extension.sendRequest({
+								url: station.url,
+							})
+						}
+						nowplaying_wrapper.dataset.stationI = ''
+						nowplaying_button.dataset.stationUrl = ''
+						nowplaying_title.title = nowplaying_title.innerText = ''
+						nowplaying_website.href = ''
+					}
+				})
+			} // if (url === STATIONS[i].url) {
+		} // for (var i = 0, i < STATIONS.length, i++) {
 	}
 }
 
@@ -156,6 +179,15 @@ function saveStation() {
 		title: document.getElementById('editor-title').value,
 		website: document.getElementById('editor-website').value,
 	}
+
+	// Перевірка URL на допустимість
+	for (var f = 0; f < FILTERS.length; f++) {
+		var filter = new RegExp('.+' + FILTERS[f] + '.*', 'gi')
+		if (newStation.url.match(filter) || newStation.website.match(filter)) {
+			alert(chrome.i18n.getMessage('url_not_allowed'))
+			return
+		}
+	}	
 
 	// Перевірка на дублювання URL трансляції і назви
 	var err = false
@@ -224,7 +256,7 @@ function showStationEditorNew() {
 	document.getElementById('editor-title').focus()
 }
 function showStationEditor(e) {
-	var url = e.target.closest('[data-station-i]').querySelector('[data-station-url').dataset.stationUrl
+	var url = e.target.closest('[data-station-id]').dataset.stationId
 	var newStation = {
 		url: '',
 		title: '',
@@ -264,7 +296,7 @@ document.getElementById('btn-new').onclick = showStationEditorNew
 // СТАРТОВІ ЗАВДАННЯ
 // ————————————————————————————————————————————————————————————————————————————————
 showStationList()
+fetchFilters()
 
 // Оновлювати показ при поверненні на закладку
 window.onfocus = updateNowPlaying
-

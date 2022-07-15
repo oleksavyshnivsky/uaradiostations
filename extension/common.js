@@ -50,7 +50,12 @@ function updateStationList() {
 // ————————————————————————————————————————————————————————————————————————————————
 // ДОПОМІЖНІ ФУНКЦІЇ
 // ————————————————————————————————————————————————————————————————————————————————
-
+function getStationByURL(url) {
+	for (var i = 0; i < STATIONS.length; i++) {
+		if (url === STATIONS[i].url) return STATIONS[i]
+	}
+	return false
+}
 
 // ————————————————————————————————————————————————————————————————————————————————
 // Стилі кнопки програвання
@@ -71,12 +76,11 @@ function updateClasses(el, status) {
 // Вмикання/вимикання програвання
 // ————————————————————————————————————————————————————————————————————————————————
 function doPlayAction(e) {
-	var wrapper = e.target.closest('[data-station-i]')
-	var url = wrapper.querySelector('[data-station-url]').dataset.stationUrl
+	var url = e.target.closest('[data-station-id]').dataset.stationId
 	if (url) {
-		STATIONS.forEach((station, station_i) => {
+		STATIONS.forEach(station => {
 			if (station.url === url) {
-				nowplaying_wrapper.dataset.stationI = station_i
+				nowplaying_wrapper.dataset.stationId = station.url
 				nowplaying_button.dataset.stationUrl = station.url
 				nowplaying_title.title = nowplaying_title.innerText = station.title
 				nowplaying_website.href = station.website
@@ -87,7 +91,7 @@ function doPlayAction(e) {
 					url: station.url,
 				}, function(response) {
 					if (response.status) {
-						document.querySelectorAll('[data-station-i="'+station_i+'"] [data-station-url]').forEach(
+						document.querySelectorAll('[data-station-url="'+station.url+'"]').forEach(
 							el => updateClasses(el, 1)
 						)
 					}
@@ -103,21 +107,19 @@ function doPlayAction(e) {
 // Оновлення статусу програвання
 // ————————————————————————————————————————————————————————————————————————————————
 function updateNowPlaying() {
-	document.querySelectorAll('.bi-stop-circle-fill').forEach(
-		el => updateClasses(el.closest('[data-station-url]'), 0)
-	)
+	document.querySelectorAll('.bi-stop-circle-fill').forEach(el => updateClasses(el, 0))
 
 	chrome.extension.sendRequest({
 		url: '',
 	}, function(response) {
-		STATIONS.every((station, station_i) => {
+		STATIONS.every(station => {
 			if (station.url === response.url) {
-				nowplaying_wrapper.dataset.stationI = station_i
+				nowplaying_wrapper.dataset.stationId = station.url
 				nowplaying_button.dataset.stationUrl = station.url
 				nowplaying_title.title = nowplaying_title.innerText = station.title
 				nowplaying_website.href = station.website
 				
-				document.querySelectorAll('[data-station-i="'+station_i+'"] [data-station-url]').forEach(
+				document.querySelectorAll('[data-station-url="'+station.url+'"]').forEach(
 					el => updateClasses(el, response.status)
 				)
 

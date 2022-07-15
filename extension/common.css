@@ -22,7 +22,7 @@ h1 {
 	visibility: hidden;
 }
 
-[data-station-i]:hover .btn[data-station-delete] {
+[data-station-id]:hover .btn[data-station-delete] {
 	visibility: visible;
 }
 

@@ -9,9 +9,9 @@ function showStationList() {
 	chrome.storage.local.get(['stations'], function(result) {
 		STATIONS = result.stations
 
-		STATIONS.forEach((station, station_i) => {
+		STATIONS.forEach(station => {
 			var station_wrapper = document.importNode(tpl, true)
-			station_wrapper.querySelector('[data-station-i]').dataset.stationI = station_i
+			station_wrapper.querySelector('[data-station-id]').dataset.stationId = station.url
 			station_wrapper.querySelector('[data-station-title]').innerText = station.title
 			station_wrapper.querySelector('[data-station-title]').title = station.title
 			station_wrapper.querySelector('[data-station-title]').onclick = doPlayAction
@@ -28,10 +28,13 @@ function showStationList() {
 }
 
 // ————————————————————————————————————————————————————————————————————————————————
-// Показати список станцій із зірками нагорі
+// Показати список станцій із Вибраними нагорі
 // ————————————————————————————————————————————————————————————————————————————————
-showStationList('popup')
+showStationList()
 
+// ————————————————————————————————————————————————————————————————————————————————
+// Перехід на Налаштування
+// ————————————————————————————————————————————————————————————————————————————————
 document.getElementById('btn-options').onclick = e => {
 	chrome.runtime.openOptionsPage()
 }
