@@ -39,6 +39,9 @@
 	"fetch_default_list": {
 		"message": "Завантажити стандартний список"
 	},
+	"default_list_json": {
+		"message": "Стандартний список (JSON)"
+	},
 	"close": {
 		"message": "Закрити"
 	},
@@ -47,5 +50,41 @@
 	},
 	"open_options": {
 		"message": "Відкрити налаштування"
+	},
+	"stream_url": {
+		"message": "URL трансляції"
+	},
+	"station_title": {
+		"message": "Назва станції"
+	},
+	"station_website": {
+		"message": "Вебсайт станції"
+	},
+	"save": {
+		"message": "Зберегти"
+	},
+	"stream_url_already_exists": {
+		"message": "Таке посилання на трансляцію уже існує"
+	},
+	"title_already_exists": {
+		"message": "Така назва уже існує"
+	},
+	"favourites": {
+		"message": "Вибране (показується нагорі)"
+	},
+	"add_station": {
+		"message": "Додати станцію"
+	},
+	"edit_station": {
+		"message": "Редагувати станцію"
+	},
+	"delete_station": {
+		"message": "Видалити станцію"
+	},
+	"confirm_delete": {
+		"message": "Ви впевнені, що хочете видалити цю станцію? Цю дію не можна відкотити."
+	},
+	"reset": {
+		"message": "Скинути"
 	}
 }

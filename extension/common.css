@@ -1,4 +1,4 @@
-button + span {
+[data-station-title] {
 	cursor: pointer;
 }
 
@@ -8,3 +8,29 @@ h1 {
 }
 
 /**/
+#nowplaying-website[href=""] {
+	visibility: hidden;
+}
+
+/**/
+.btn[data-station-fav=false] {
+	display: none;
+	/*visibility: hidden;*/
+}
+
+.btn[data-station-delete] {
+	visibility: hidden;
+}
+
+[data-station-i]:hover .btn[data-station-delete] {
+	visibility: visible;
+}
+
+
+#form-editor {
+	display: none;
+}
+
+#form-editor.show {
+	display: block;
+}

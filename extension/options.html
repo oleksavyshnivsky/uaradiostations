@@ -25,6 +25,33 @@
 				</a>
 			</div></div>
 		</div>
+		<!-- Додаткові дії -->
+		<div class="d-flex gap-2 gap-x-4 flex-wrap mx-auto mb-4 justify-content-center">
+			<!-- Виклик редактора -->
+			<button class="btn btn-secondary" id="btn-new" data-i18n="add_station"></button>
+			<!-- <button class="btn btn-outline-secondary btn-toggle-editor" data-i18n="renew_station_list"></button> -->
+		</div>
+		<!-- Редактор станції -->
+		<form method="post" id="form-editor" class="p-2 mb-4" style="color: black;">
+			<div class="form-floating mb-2">
+				<input type="text" id="editor-title" class="form-control" required>
+				<label for="editor-title" data-i18n="station_title"></label>
+			</div>
+			<div class="form-floating mb-2">
+				<input type="url" id="editor-url" class="form-control" required>
+				<label for="editor-url" data-i18n="stream_url"></label>
+			</div>
+			<div class="form-floating mb-2">
+				<input type="url" id="editor-website" class="form-control" required>
+				<label for="editor-website" data-i18n="station_website"></label>
+			</div>
+			<div class="text-end">
+				<button type="button" id="btn-reset" data-i18n="close" class="btn btn-secondary"></button>
+				<button data-i18n="save" class="btn btn-primary"></button>
+				<input type="text" id="editor-oldurl" style="display: none;">
+			</div>
+		</form>
+		<!-- Список станцій -->
 		<div id="stations-wrapper" class="mb-4 d-flex flex-wrap gap-2 justify-content-center"></div>
 		<!-- Редактор -->
 		<div id="update-wrapper" class="mb-4 p-2" style="display: none; background-color: wheat;">
@@ -32,39 +59,49 @@
 				<textarea rows="5" id="userdata" class="form-control" required></textarea>
 			</div>
 			<div class="d-grid gap-2 d-sm-flex justify-content-center">
-				<button id="btn-fetch-standard" class="btn btn-secondary" data-i18n="fetch_default_list"></button>
 				<button id="btn-update-stations" class="btn btn-primary" data-i18n="renew"></button>
 				<button class="btn btn-secondary btn-toggle-editor" data-i18n="close"></button>
 			</div>
+		</div>
+
+		<!-- Додаткові дії -->
+		<div class="d-flex gap-2 gap-x-4 flex-wrap mx-auto mb-4 justify-content-center">
+			<!-- Стандартний список -->
+			<a href="https://oleksavyshnivsky.github.io/uaradiostations/defaultstations.json" class="btn btn-secondary" target="_blank">
+				<span data-i18n="default_list_json"></span>
+				&nbsp;<i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+			</a>
+			<button id="btn-fetch-standard" class="btn btn-secondary" data-i18n="fetch_default_list"></button>
+			<!-- Джерело -->
+			<a href="https://github.com/oleksavyshnivsky/uaradiostations" target="_blank" class="btn btn-secondary ">
+				Github
+				&nbsp;<i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+			</a>
+			<!-- Контакт -->
+			<a href="mailto:oleksa.vyshnivsky@gmail.com" target="_blank" class="btn btn-secondary ">
+				<span data-i18n="contact">Написати автору</span>
+				&nbsp;<i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+			</a>
 		</div>
 
 		<!-- Програвання -->
 		<template id="tpl-station">
 			<div><div class="input-group" data-station-i>
 				<button class="btn btn-outline-primary bi bi-play-circle-fill text-success" data-station-url></button>
-				<span class="input-group-text" style="width: 20rem;" data-station-title ></span>
+				<span class="input-group-text" style="width: 16rem;" data-station-title ></span>
 				<a href="" target="_blank" class="btn btn-outline-secondary"data-station-website>
 					<i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
 				</a>
-				<button class="btn btn-outline-primary" data-station-star>
+				<button class="btn btn-outline-primary" data-station-fav data-i18n-title="favourites">
 					<i class="bi" aria-hidden="true"></i>
 				</button>
+				<button class="btn btn-outline-primary" data-station-edit data-i18n-title="edit_station">
+					<i class="bi bi-pencil-square" aria-hidden="true"></i>
+				</button>
+				<button class="btn btn-outline-danger" data-station-delete data-i18n-title="delete_station">
+					<i class="bi bi-x-lg" aria-hidden="true"></i>
+				</button>
 			</div></div>
-		</template>
- 
-		<!-- Додаткові дії -->
-		<div class="d-grid gap-2 col-5 d-md-flex mx-auto mb-4">
-			<!-- Виклик редактора -->
-				<button class="btn btn-outline-secondary btn-toggle-editor" data-i18n="renew_station_list"></button>
-			<!-- Джерело -->
-				<a href="https://github.com/oleksavyshnivsky/uaradiostations" target="_blank" class="btn btn-outline-secondary ">Github</a>
-			<!-- Контакт -->
-				<a href="mailto:oleksa.vyshnivsky@gmail.com" target="_blank" data-i18n="contact" class="btn btn-outline-secondary ">Написати автору</a>
-		</div>
-
-		<!-- Редактор станції -->
-		<template id="tpl-station-editor">
-			
 		</template>
 
 		<script src="common.js" charset="utf-8"></script>

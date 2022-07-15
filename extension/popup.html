@@ -15,18 +15,14 @@
 	<body class="bg-dark text-white mx-auto">
 		<!-- Заголовок -->
 		<div class="d-flex flex-wrap justify-content-between mx-2 mb-3">
-			<div class="-bg-primary py-2"><div id="nowplaying-wrapper" class="input-group" data-station-i>
+			<div class="py-2"><div id="nowplaying-wrapper" class="input-group" data-station-i>
 				<button class="btn btn-warning bi " id="nowplaying-button" data-station-url></button>
-				<span class="input-group-text" id="nowplaying-title" style="width: 12rem;" data-station-title></span>
+				<span class="input-group-text" id="nowplaying-title" style="width: 16rem;" data-station-title></span>
 				<a href="" id="nowplaying-website" target="_blank" class="btn btn-info">
 					<i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
 				</a>
 			</div></div>
 			<div class="ms-2 mt-2">
-				<!-- Виклик редактора -->
-				<button target="_blank" data-i18n-title="renew_station_list" class="btn btn-outline-secondary btn-toggle-editor">
-					<i class="bi bi-pencil-square" aria-hidden="true"></i>
-				</button>
 				<!-- Джерело -->
 				<a href="https://github.com/oleksavyshnivsky/uaradiostations" target="_blank" title="Github" class="btn btn-outline-secondary">
 					<i class="bi bi-github" aria-hidden="true"></i>
@@ -44,19 +40,6 @@
 		<!-- Програвач -->
 		<div id="stations-wrapper" class="mb-4 d-flex flex-wrap gap-2 justify-content-center">
 
-		</div>
-		<!-- Редактор -->
-		<div id="update-wrapper" class="mb-4 p-2" style="display: none; background-color: wheat;">
-			<div class="mb-2">
-				<textarea rows="5" id="userdata" class="form-control" required></textarea>
-			</div>
-			<div class="d-grid gap-2 d-sm-flex justify-content-center">
-				<button id="btn-fetch-standard" class="btn btn-secondary" data-i18n="fetch_default_list"></button>
-				<button id="btn-update-stations" class="btn btn-primary" data-i18n="renew"></button>
-				<button class="btn btn-secondary btn-toggle-editor" data-i18n="close"></button>
-			</div>
-		</div>
-
 		<!-- Програвання -->
 		<template id="tpl-station">
 			<div><div class="input-group" data-station-i>
@@ -65,8 +48,8 @@
 				<a href="" target="_blank" class="btn btn-outline-secondary"data-station-website>
 					<i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
 				</a>
-				<span class="btn btn-outline-secondary disabled" data-station-star style="cursor: default;">
-					<i class="bi bi-star-fill" aria-hidden="true"></i>
+				<span class="btn btn-outline-secondary disabled" data-station-fav>
+					<i class="bi bi-heart-fill" aria-hidden="true"></i>
 				</span>
 			</div></div>
 		</template>
