@@ -1,0 +1,93 @@
+{
+	"name": {
+		"message": "Message text, with optional placeholders.",
+		"description": "Translator-aimed description of the message.",
+		"placeholders": {
+			"placeholder_name": {
+				"content": "A string to be placed within the message.",
+				"example": "Translator-aimed example of the placeholder string."
+			}
+		}
+	},
+	"title": {
+		"message": "Ukrainian radio stations"
+	},
+	"confirm": {
+		"message": "Do you confirm this action?"
+	},
+	"done": {
+		"message": "Done"
+	},
+	"reload_page": {
+		"message": "Reload the page"
+	},
+	"options": {
+		"message": "Options"
+	},
+	"loading": {
+		"message": "Loading..."
+	},
+	"contact": {
+		"message": "Message to the author"
+	},
+	"renew": {
+		"message": "Update"
+	},
+	"renew_station_list": {
+		"message": "Update the list of radio stations"
+	},
+	"fetch_default_list": {
+		"message": "Load the default list"
+	},
+	"default_list_json": {
+		"message": "Default list (JSON)"
+	},
+	"close": {
+		"message": "Close"
+	},
+	"notajson": {
+		"message": "Inputted text is not a valid JSON array"
+	},
+	"open_options": {
+		"message": "Open options"
+	},
+	"stream_url": {
+		"message": "URL of the stream"
+	},
+	"station_title": {
+		"message": "Name of the radio station"
+	},
+	"station_website": {
+		"message": "Website of the radio station"
+	},
+	"save": {
+		"message": "Save"
+	},
+	"stream_url_already_exists": {
+		"message": "This URL is already used"
+	},
+	"title_already_exists": {
+		"message": "This name is already used"
+	},
+	"favourites": {
+		"message": "Favourites (shown at the top)"
+	},
+	"add_station": {
+		"message": "Add a radio station"
+	},
+	"edit_station": {
+		"message": "Edit this radio station"
+	},
+	"delete_station": {
+		"message": "Delete this radio station"
+	},
+	"confirm_delete": {
+		"message": "Do you confirm that you want to delete this radio station? This action cannot be rolled back."
+	},
+	"reset": {
+		"message": "Reset"
+	},
+	"url_not_allowed": {
+		"message": "Kinda not liking inputted URL"
+	}
+}
