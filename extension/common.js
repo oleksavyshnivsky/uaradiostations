@@ -87,9 +87,10 @@ function doPlayAction(e) {
 
 				document.querySelectorAll('.bi-stop-circle-fill').forEach(el => updateClasses(el, 0))
 
-				chrome.extension.sendRequest({
+				chrome.runtime.sendMessage({
 					url: station.url,
-				}, function(response) {
+				}, response => {
+					console.log(response)
 					if (response.status) {
 						document.querySelectorAll('[data-station-url="'+station.url+'"]').forEach(
 							el => updateClasses(el, 1)
@@ -109,7 +110,7 @@ function doPlayAction(e) {
 function updateNowPlaying() {
 	document.querySelectorAll('.bi-stop-circle-fill').forEach(el => updateClasses(el, 0))
 
-	chrome.extension.sendRequest({
+	chrome.runtime.sendMessage({
 		url: '',
 	}, function(response) {
 		STATIONS.every(station => {

@@ -147,12 +147,12 @@ function deleteStation(e) {
 				}
 
 				// Прибрати з програвача
-				chrome.extension.sendRequest({
+				chrome.runtime.sendMessage({
 					url: '',
 				}, function(response) {
 					if (station.url === response.url) {
 						if (response.status) {
-							chrome.extension.sendRequest({
+							chrome.runtime.sendMessage({
 								url: station.url,
 							})
 						}

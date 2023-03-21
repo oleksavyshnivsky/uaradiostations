@@ -1,4 +1,54 @@
-const AUDIO = new Audio()
+let PLAY_STATUS = false
+let STATION_URL = false
+
+// ————————————————————————————————————————————————————————————————————————————————
+// https://stackoverflow.com/questions/67437180/play-audio-from-background-script-in-chrome-extention-manifest-v3
+// ————————————————————————————————————————————————————————————————————————————————
+
+/**
+ * Plays audio files from extension service workers
+ * @param {string} source - path of the audio file
+ * @param {number} volume - volume of the playback
+ */
+async function playSound(source = 'default.wav', volume = 1) {
+    await createOffscreen()
+    await chrome.runtime.sendMessage({ play: { source, volume } })
+}
+
+async function pauseSound() {
+    await createOffscreen()
+    await chrome.runtime.sendMessage({ pause: true })
+}
+
+// Create the offscreen document if it doesn't already exist
+async function createOffscreen() {
+    if (await chrome.offscreen.hasDocument()) return;
+    await chrome.offscreen.createDocument({
+        url: 'offscreen.html',
+        reasons: ['AUDIO_PLAYBACK'],
+        justification: 'background radio' // details for using the API
+    })
+}
+
+
+// ————————————————————————————————————————————————————————————————————————————————
+// 
+// ————————————————————————————————————————————————————————————————————————————————
+chrome.runtime.onInstalled.addListener(({ reason, version }) => {
+	if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
+		showReadme();
+	}
+})
+
+chrome.action.onClicked.addListener((tab) => {
+	showReadme()
+})
+
+function showReadme(info, tab) {
+	const url = chrome.runtime.getURL('readme.html')
+	chrome.tabs.create({ url })
+}
+
 
 // ————————————————————————————————————————————————————————————————————————————————
 // Користувач надсилає URL request.url
@@ -10,30 +60,32 @@ const AUDIO = new Audio()
 //		- змінити активну станцію
 // 		- почати програвання
 // ————————————————————————————————————————————————————————————————————————————————
-chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	if (!request.url) {
-		sendResponse({url: AUDIO.src, status: !AUDIO.paused})
+		sendResponse({url: STATION_URL, status: PLAY_STATUS})
 		return
 	}
 
-	if (AUDIO.src === request.url) {
-		if (AUDIO.paused)
-			AUDIO.play()
+	if (STATION_URL === request.url) {
+		if (PLAY_STATUS)
+			pauseSound()
 		else
-			AUDIO.pause()
+			playSound(STATION_URL)
+		PLAY_STATUS = !PLAY_STATUS
 	} else {
-		AUDIO.src = request.url
-		AUDIO.play()
+		STATION_URL = request.url
+		playSound(STATION_URL)
+		PLAY_STATUS = true
 	}
 
-	if (AUDIO.paused) {
-		chrome.browserAction.setBadgeText( { text: '' } )
+	if (!PLAY_STATUS) {
+		chrome.action.setBadgeText( { text: '' } )
 	} else {
-		chrome.browserAction.setBadgeText( { text: '♪' } )
-		chrome.browserAction.setBadgeBackgroundColor({color: [255,255,255,255]});
+		chrome.action.setBadgeText( { text: '♪' } )
+		chrome.action.setBadgeBackgroundColor({color: [255,255,255,255]});
 	}
 
-	sendResponse({url: AUDIO.src, status: !AUDIO.paused})
+	sendResponse({url: STATION_URL, status: PLAY_STATUS})
 })
 
 
