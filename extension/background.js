@@ -1,4 +1,4 @@
-let PLAY_STATUS = false
+let PLAY_STATUS = null
 let STATION_URL = false
 
 // ————————————————————————————————————————————————————————————————————————————————
@@ -11,23 +11,23 @@ let STATION_URL = false
  * @param {number} volume - volume of the playback
  */
 async function playSound(source = 'default.wav', volume = 1) {
-    await createOffscreen()
-    await chrome.runtime.sendMessage({ play: { source, volume } })
+	await createOffscreen()
+	await chrome.runtime.sendMessage({ play: { source, volume } })
 }
 
 async function pauseSound() {
-    await createOffscreen()
-    await chrome.runtime.sendMessage({ pause: true })
+	await createOffscreen()
+	await chrome.runtime.sendMessage({ pause: true })
 }
 
 // Create the offscreen document if it doesn't already exist
 async function createOffscreen() {
-    if (await chrome.offscreen.hasDocument()) return;
-    await chrome.offscreen.createDocument({
-        url: 'offscreen.html',
-        reasons: ['AUDIO_PLAYBACK'],
-        justification: 'background radio' // details for using the API
-    })
+	if (await chrome.offscreen.hasDocument()) return;
+	await chrome.offscreen.createDocument({
+		url: 'offscreen.html',
+		reasons: ['AUDIO_PLAYBACK'],
+		justification: 'background radioplayer' // details for using the API
+	})
 }
 
 
@@ -51,6 +51,19 @@ function showReadme(info, tab) {
 
 
 // ————————————————————————————————————————————————————————————————————————————————
+// 
+// ————————————————————————————————————————————————————————————————————————————————
+function asyncGetURL() {
+	return new Promise((resolve, reject) => {
+		chrome.storage.local.get(['url'], result => {
+			STATION_URL = result.url ? result.url : ''
+			resolve()
+		})
+	})
+}
+
+
+// ————————————————————————————————————————————————————————————————————————————————
 // Користувач надсилає URL request.url
 // - Якщо request.url відсутній: 
 //		- повернути URL активної станції і статус програвання
@@ -60,21 +73,39 @@ function showReadme(info, tab) {
 //		- змінити активну станцію
 // 		- почати програвання
 // ————————————————————————————————————————————————————————————————————————————————
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-	if (!request.url) {
-		sendResponse({url: STATION_URL, status: PLAY_STATUS})
+async function doMainAction(msg) {
+	if (PLAY_STATUS === null) {
+		if (!(await chrome.offscreen.hasDocument())) {
+			PLAY_STATUS = false
+			await asyncGetURL()
+			// STATION_URL = false
+		} else {
+			chrome.runtime.sendMessage({getstatus: true}, response => {
+				if ('url' in response) {
+					STATION_URL = response.url
+					PLAY_STATUS = response.status
+				} else {
+					STATION_URL = false
+					PLAY_STATUS = false
+				}
+			})
+		}
+	}
+
+	if (!msg.url) {
+		chrome.runtime.sendMessage({url: STATION_URL, status: PLAY_STATUS, sender: 'background', updateNowPlaying: true})
 		return
 	}
 
-	if (STATION_URL === request.url) {
+	if (STATION_URL === msg.url) {
 		if (PLAY_STATUS)
-			pauseSound()
+			await pauseSound()
 		else
-			playSound(STATION_URL)
+			await playSound(STATION_URL)
 		PLAY_STATUS = !PLAY_STATUS
 	} else {
-		STATION_URL = request.url
-		playSound(STATION_URL)
+		STATION_URL = msg.url
+		await playSound(STATION_URL)
 		PLAY_STATUS = true
 	}
 
@@ -85,7 +116,17 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		chrome.action.setBadgeBackgroundColor({color: [255,255,255,255]});
 	}
 
-	sendResponse({url: STATION_URL, status: PLAY_STATUS})
+	chrome.runtime.sendMessage({url: STATION_URL, status: PLAY_STATUS, sender: 'background', updateNowPlaying: true})
+	if (!PLAY_STATUS) chrome.storage.local.set({url: STATION_URL}, function() {})
+}
+
+
+// ————————————————————————————————————————————————————————————————————————————————
+// 
+// ————————————————————————————————————————————————————————————————————————————————
+chrome.runtime.onMessage.addListener(msg => {
+	if ('sender' in msg && msg.sender === 'background') return false
+	if ('url' in msg) doMainAction(msg)
 })
 
 

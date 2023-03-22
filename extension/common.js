@@ -77,59 +77,41 @@ function updateClasses(el, status) {
 // ————————————————————————————————————————————————————————————————————————————————
 function doPlayAction(e) {
 	var url = e.target.closest('[data-station-id]').dataset.stationId
-	if (url) {
-		STATIONS.forEach(station => {
-			if (station.url === url) {
-				nowplaying_wrapper.dataset.stationId = station.url
-				nowplaying_button.dataset.stationUrl = station.url
-				nowplaying_title.title = nowplaying_title.innerText = station.title
-				nowplaying_website.href = station.website
-
-				document.querySelectorAll('.bi-stop-circle-fill').forEach(el => updateClasses(el, 0))
-
-				chrome.runtime.sendMessage({
-					url: station.url,
-				}, response => {
-					console.log(response)
-					if (response.status) {
-						document.querySelectorAll('[data-station-url="'+station.url+'"]').forEach(
-							el => updateClasses(el, 1)
-						)
-					}
-				})
-			}
-			return station.url !== url
-		})
-	}
+	chrome.runtime.sendMessage({url: url})
 }
 
 
 // ————————————————————————————————————————————————————————————————————————————————
 // Оновлення статусу програвання
 // ————————————————————————————————————————————————————————————————————————————————
-function updateNowPlaying() {
+function updateNowPlaying(msg) {
 	document.querySelectorAll('.bi-stop-circle-fill').forEach(el => updateClasses(el, 0))
+	for (var i = 0; i < STATIONS.length; i++) {
+		var station = STATIONS[i]
+		if (station.url === msg.url) {
+			nowplaying_wrapper.dataset.stationId = station.url
+			nowplaying_button.dataset.stationUrl = station.url
+			nowplaying_title.title = nowplaying_title.innerText = station.title
+			nowplaying_website.href = station.website
+			
+			document.querySelectorAll('[data-station-url="'+station.url+'"]').forEach(el => updateClasses(el, msg.status))
 
-	chrome.runtime.sendMessage({
-		url: '',
-	}, function(response) {
-		STATIONS.every(station => {
-			if (station.url === response.url) {
-				nowplaying_wrapper.dataset.stationId = station.url
-				nowplaying_button.dataset.stationUrl = station.url
-				nowplaying_title.title = nowplaying_title.innerText = station.title
-				nowplaying_website.href = station.website
-				
-				document.querySelectorAll('[data-station-url="'+station.url+'"]').forEach(
-					el => updateClasses(el, response.status)
-				)
-
-				return false
-			} else return true
-			return 
-		})
-	})
+			return true
+		}
+	}
 }
+
+function preUpdateNowPlaying() {
+	chrome.runtime.sendMessage({url: ''})
+}
+
+
+// ————————————————————————————————————————————————————————————————————————————————
+// 
+// ————————————————————————————————————————————————————————————————————————————————
+chrome.runtime.onMessage.addListener(msg => {
+	if ('updateNowPlaying' in msg) updateNowPlaying(msg)
+})
 
 // ————————————————————————————————————————————————————————————————————————————————
 // Керування оновленням списку станцій

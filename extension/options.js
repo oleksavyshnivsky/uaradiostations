@@ -124,7 +124,7 @@ function showStationList() {
 		})
 
 		// Оновлення статусу програвання
-		updateNowPlaying()
+		preUpdateNowPlaying()
 	})
 }
 
@@ -299,4 +299,4 @@ showStationList()
 fetchFilters()
 
 // Оновлювати показ при поверненні на закладку
-window.onfocus = updateNowPlaying
+window.onfocus = preUpdateNowPlaying

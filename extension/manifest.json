@@ -1,7 +1,7 @@
 {
 	"name": "Українські радіостанції",
 	"description": "Програвач українських радіостанцій",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"manifest_version": 3,
 	"default_locale": "uk",
 	"icons": {
